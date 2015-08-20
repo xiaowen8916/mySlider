@@ -1,0 +1,2 @@
+# mySlider
+my slider component
