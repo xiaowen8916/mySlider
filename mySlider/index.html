@@ -13,18 +13,21 @@
 		<script src="js/slider.js"></script>
 	</head>
 	<body>
-		<div class="slider-wrapper">
-			<ul>
-				<li><img src="imgs/1.jpg"/></li>
-				<li><img src="imgs/2.jpg"/></li>
-				<li><img src="imgs/3.jpg"/></li>
-				<li><img src="imgs/4.jpg"/></li>
-				<li><img src="imgs/5.jpg"/></li>
-				<li><img src="imgs/6.jpg"/></li>
-			</ul>
+		<div class="height-wrapper" style="margin:0 20px;border:2px solid black;">
+			<div class="slider-wrapper">
+				<ul>
+					<li><img src="imgs/1.jpg"/></li>
+					<li><img src="imgs/2.jpg"/></li>
+					<li><img src="imgs/3.jpg"/></li>
+					<li><img src="imgs/4.jpg"/></li>
+					<li><img src="imgs/5.jpg"/></li>
+					<li><img src="imgs/6.jpg"/></li>
+				</ul>
+			</div>
 		</div>
 		<script>
 			new Slider({
+				dependWidthSelector:'.height-wrapper',
 				selector:'.slider-wrapper',
 				loop:true,
 				autoPlay:true,

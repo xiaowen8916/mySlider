@@ -150,7 +150,7 @@ Slider.prototype = {
 			}
 		}
 
-		$con.on('touchstart', touchStart).on('touchmove', touchMove).on('touchend', touchEnd);
+		$con.on('touchstart', touchStart).on('touchmove', touchMove).on('touchend', touchEnd).on('webkitTransitionEnd transitionend',function(e){console.log(e.type|| e.originalEvent.type);});
 		$win.on('resize',reSize);
 	},
 	slideTo: function (index) {
