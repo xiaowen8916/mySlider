@@ -45,7 +45,7 @@ Slider.prototype = {
 		var me = this,
 			datas=me.opt.datas,
 			selector=me.opt.selector,
-			$dependWidthSel=$(me.opt.dependWidthSelector?me.opt.dependWidthSelector:window),
+			$dependWidthSel=$(me.opt.dependWidthSelector||window),
 			$sel=$(selector||'.qt-slider'),
 			imgSize=$sel.find('ul img').length,
 			instance=Slider.prototype.instance;
@@ -135,7 +135,7 @@ Slider.prototype = {
 				index=me.index;
 			me.width=width;
 			$sel.width(width);
-			$con.width(width*length).find('ul img').width(width);
+			$con.width(width*length).find('img').width(width);
 			if(loop&&index===0&&length>1){
 				$con.css({'-webkit-transition':'0','transition':'0','-webkit-transform':'translate3d(-'+width*(length-2)+'px,0,0)'});
 				me.index=length-2;
