@@ -87,8 +87,9 @@ Slider.prototype = {
 			startInfo;
 
 		function touchStart(event) {
-			if(event.touches&&event.touches.length>1)return;
-			var e = event.touches ? event.touches[0] : event;
+			var touches=event.touches||event.originalEvent.touches;
+			if(touches&&touches.length>1)return;
+			var e = touches[0];
 			startInfo = {
 				pageX: e.pageX,
 				pageY: e.pageY,
@@ -104,7 +105,8 @@ Slider.prototype = {
 			event.preventDefault();
 			if (!isTouched) return;
 			var index = me.index;
-			var e = event.touches ? event.touches[0] : event;
+			var touches=event.touches||event.originalEvent.touches;
+			var e = touches[0];
 			deltaX = e.pageX - startInfo.pageX;
 			if (!isSliding) {
 				isSliding = Math.abs(deltaX) > Math.abs(e.pageY - startInfo.pageY);
@@ -116,7 +118,8 @@ Slider.prototype = {
 		}
 
 		function touchEnd(event) {
-			if(event.touches&&event.touches.length!==0)return;
+			var touches=event.touches||event.originalEvent.touches;
+			if(touches&&touches.length!==0)return;
 			var index = me.index;
 			var needSliding = (Date.now() - startInfo.time) < 250 && Math.abs(deltaX) > 20 || Math.abs(deltaX) > me.width / 3;
 			if (isSliding) {
