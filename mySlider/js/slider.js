@@ -33,9 +33,10 @@ function Slider(opt) {
 		lazyLoad:false,
 		lazyLoadSum:5,
 		forceUpdateImgs:false,
-		singleton:false
+		singleton:false,
+		useTransitionEnd:true
 	}, opt);
-	if(me.init())return QSlider.prototype.instance;
+	if(me.init())return Slider.prototype.instance;
 	me.opt.autoPlay&&me.autoPlay();
 }
 Slider.prototype = {
@@ -71,21 +72,23 @@ Slider.prototype = {
 		me.opt.lazyLoad&&me.initImgLazyLoad(me.opt.index);
 		me.$con=$sel.find('ul');
 		me.$con.width(me.width*me.length);
+		me.initCSSPrefix();
 		me.initEvents();
 		me.initSeenItem(me.opt.index);
-		if(me.opt.singleton)QSlider.prototype.instance=this;
+		if(me.opt.singleton)Slider.prototype.instance=this;
 		return false;
 	},
 	initEvents: function () {
-		var me = this,
+		var startInfo,transitionEnd,
+			resizeEvent='orientationchange' in window?'orientationchange':'resize',
+			isTouchEn='ontouchstart' in window,
+			me = this,
 			$sel=me.$sel,
 			$con = me.$con,
 			$win=$(window),
 			isTouched = false,
 			isSliding = false,
-			deltaX = 0,
-			startInfo;
-
+			deltaX = 0;
 		function touchStart(event) {
 			var touches=event.touches||event.originalEvent.touches;
 			if(touches&&touches.length>1)return;
@@ -113,7 +116,7 @@ Slider.prototype = {
 			}
 			if (isSliding) {
 				var pos = (deltaX - index * me.width);
-				me.$con.css('-webkit-transform', 'translate3d(' + pos + 'px,0,0)');
+				me.$con.css(me.cssPrefix+'transform', 'translate3d(' + pos + 'px,0,0)');
 			}
 		}
 
@@ -139,19 +142,50 @@ Slider.prototype = {
 			me.width=width;
 			$sel.width(width);
 			$con.width(width*length).find('img').width(width);
+			$con.css(me.cssPrefix+'transition','none');
 			if(loop&&index===0&&length>1){
-				$con.css({'-webkit-transition':'0','transition':'0','-webkit-transform':'translate3d(-'+width*(length-2)+'px,0,0)'});
+				$con.css(me.cssPrefix+'transform','translate3d(-'+width*(length-2)+'px,0,0)');
 				me.index=length-2;
 			}else if(loop&&index===length-1&&length>1){
-				$con.css({'-webkit-transition':'0','transition':'0','-webkit-transform':'translate3d(-'+width+'px,0,0)'});
+				$con.css(me.cssPrefix+'transform','translate3d(-'+width+'px,0,0)');
 				me.index=1;
 			}else{
-				$con.css({'-webkit-transition':'0','transition':'0','-webkit-transform':'translate3d(-'+width*(loop&&length>1?index-1:index)+'px,0,0)'});
+				$con.css(me.cssPrefix+'transform','translate3d(-'+width*(loop&&length>1?index-1:index)+'px,0,0)');
 			}
 		}
 
-		$con.on('touchstart', touchStart).on('touchmove', touchMove).on('touchend', touchEnd).on('webkitTransitionEnd transitionend',function(e){console.log(e.type|| e.originalEvent.type);});
-		$win.on('resize',reSize);
+		function resetTransition(){
+			var $con=me.$con,
+				loop=me.loop,
+				length=me.length,
+				index=me.index,
+				width=me.width;
+				$con.css(me.cssPrefix+'transition','none');
+				if(loop&&length>1&&index===0){
+					$con.css(me.cssPrefix+'transform','translate3d(-'+width*(length-2)+'px,0,0)');
+					me.index=length-2;
+				}else if(loop&&length>1&&index===length-1){
+					$con.css(me.cssPrefix+'transform','translate3d(-'+width+'px,0,0)');
+					me.index=1;
+				}
+				me.opt.onSlideEnd.call(me,loop&&length>1?me.index-1:me.index);
+		}
+
+		isTouchEn&&$con.on('touchstart', touchStart).on('touchmove', touchMove).on('touchend', touchEnd);
+		if(me.opt.useTransitionEnd){
+			transitionEnd = (function(){
+				var transitionEndVendors={
+					''			: 'transitionend',
+					'webkit'	: 'webkitTransitionEnd',
+					'Moz'		: 'transitionend',
+					'O'			: 'otransitionend',
+					'ms'		: 'MSTransitionEnd'
+				};
+				return transitionEndVendors[me.vendor];
+			})();
+			$con.on(transitionEnd,resetTransition);
+		}
+		$win.on(resizeEvent,reSize);
 	},
 	slideTo: function (index) {
 		var me = this;
@@ -163,16 +197,14 @@ Slider.prototype = {
 			}
 		}
 		me.opt.onSlideStart.call(me);
-		me.$con.css({
-			'-webkit-transition-timing-function':me.opt.effect,
-			'-webkit-transition-duration': me.opt.speed + 'ms',
-			'-webkit-transform': 'translate3d(' + -(index * me.width) + 'px,0,0)'
-		});
+		me.$con.css(me.cssPrefix+'transition',me.opt.speed + 'ms '+me.opt.effect).css(
+			me.cssPrefix+'transform','translate3d(' + -(index * me.width) + 'px,0,0)'
+		);
 		if (me.index != index) {
 			me.index = index;
 			me.fixSlideIndex();
 		}
-		me.resetTransition();
+		!me.opt.useTransitionEnd&&me.resetTransition();
 	},
 	autoPlay: function () {
 		var me = this;
@@ -227,14 +259,13 @@ Slider.prototype = {
 			index=me.index,
 			width=me.width;
 		setTimeout(function(){
+			$con.css(me.cssPrefix+'transition','none');
 			if(loop&&length>1&&index===0){
-				$con.css({'-webkit-transition':'0','transition':'0','-webkit-transform':'translate3d(-'+width*(length-2)+'px,0,0)'});
+				$con.css(me.cssPrefix+'transform','translate3d(-'+width*(length-2)+'px,0,0)');
 				me.index=length-2;
 			}else if(loop&&length>1&&index===length-1){
-				$con.css({'-webkit-transition':'0','transition':'0','-webkit-transform':'translate3d(-'+width+'px,0,0)'});
+				$con.css(me.cssPrefix+'transform','translate3d(-'+width+'px,0,0)');
 				me.index=1;
-			}else{
-				$con.css({'-webkit-transition':'0','transition':'0'});
 			}
 			me.opt.onSlideEnd.call(me,loop&&length>1?me.index-1:me.index);
 		},me.opt.speed);
@@ -275,7 +306,7 @@ Slider.prototype = {
 			index=loop&&length>1?1:0;
 			transX=loop&&length>1?width:0;
 		}
-		$con.css('-webkit-transform','translate3d(-'+transX+'px,0,0)');
+		$con.css(me.cssPrefix+'transform','translate3d(-'+transX+'px,0,0)');
 		me.index=index;
 		size=loop&&length>1?length-2:length;
 		me.opt.onInitEnd.call(me,loop&&length>1?index-1:index,size);
@@ -332,5 +363,22 @@ Slider.prototype = {
 	},
 	lazyLoadImg:function($img){
 		$img.attr({'src':$img.data('lazy-src'),'data-img-load':'true'});
+	},
+	initCSSPrefix:function(){
+		var t,len,i=0,me=this,
+			dummyStyle=document.createElement('div').style,
+			vendor=(function(){
+				var vendors='t,webkitT,MozT,msT,OT'.split(',');
+				len=vendors.length;
+				for(;i<len;i++){
+					t=vendors[i]+'ransform';
+					if(t in dummyStyle){
+						return vendors[i].substring(0,vendors[i].length-1);
+					}
+				}
+				return '';
+			})();
+		me.vendor=vendor;
+		me.cssPrefix=vendor?'-'+vendor.toLowerCase()+'-':'';
 	}
 };
