@@ -92,6 +92,7 @@ Slider.prototype = {
 		function touchStart(event) {
 			var touches=event.touches||event.originalEvent.touches;
 			if(touches&&touches.length>1)return;
+			me.clearTransitionTime();
 			var e = touches[0];
 			startInfo = {
 				pageX: e.pageX,
@@ -142,7 +143,7 @@ Slider.prototype = {
 			me.width=width;
 			$sel.width(width);
 			$con.width(width*length).find('img').width(width);
-			$con.css(me.cssPrefix+'transition','none');
+			me.clearTransitionTime();
 			if(loop&&index===0&&length>1){
 				$con.css(me.cssPrefix+'transform','translate3d(-'+width*(length-2)+'px,0,0)');
 				me.index=length-2;
@@ -160,11 +161,12 @@ Slider.prototype = {
 				length=me.length,
 				index=me.index,
 				width=me.width;
-				$con.css(me.cssPrefix+'transition','none');
 				if(loop&&length>1&&index===0){
+					me.clearTransitionTime();
 					$con.css(me.cssPrefix+'transform','translate3d(-'+width*(length-2)+'px,0,0)');
 					me.index=length-2;
 				}else if(loop&&length>1&&index===length-1){
+					me.clearTransitionTime();
 					$con.css(me.cssPrefix+'transform','translate3d(-'+width+'px,0,0)');
 					me.index=1;
 				}
@@ -259,11 +261,12 @@ Slider.prototype = {
 			index=me.index,
 			width=me.width;
 		setTimeout(function(){
-			$con.css(me.cssPrefix+'transition','none');
 			if(loop&&length>1&&index===0){
+				me.clearTransitionTime();
 				$con.css(me.cssPrefix+'transform','translate3d(-'+width*(length-2)+'px,0,0)');
 				me.index=length-2;
 			}else if(loop&&length>1&&index===length-1){
+				me.clearTransitionTime();
 				$con.css(me.cssPrefix+'transform','translate3d(-'+width+'px,0,0)');
 				me.index=1;
 			}
@@ -380,5 +383,9 @@ Slider.prototype = {
 			})();
 		me.vendor=vendor;
 		me.cssPrefix=vendor?'-'+vendor.toLowerCase()+'-':'';
+	},
+	clearTransitionTime:function(){
+		var me=this;
+		me.$con.css(me.cssPrefix+'transition','0ms '+me.opt.effect);
 	}
 };
