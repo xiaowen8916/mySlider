@@ -197,6 +197,8 @@ Slider.prototype = {
 			}else if(index>me.length-1){
 				index=me.length-1;
 			}
+		}else{
+			console.log(index);
 		}
 		me.opt.onSlideStart.call(me);
 		me.$con.css(me.cssPrefix+'transition',me.opt.speed + 'ms '+me.opt.effect).css(
@@ -210,8 +212,8 @@ Slider.prototype = {
 	},
 	autoPlay: function () {
 		var me = this;
+		if(me.length===1)return;
 		me.timer=setInterval(function () {
-			if(me.length===1)return;
 			if (!me.loop&&me.index == me.length - 1) {
 				me.slideTo(0);
 			} else {
@@ -310,7 +312,7 @@ Slider.prototype = {
 			transX=loop&&length>1?width:0;
 		}
 		$con.css(me.cssPrefix+'transform','translate3d(-'+transX+'px,0,0)');
-		me.index=index;
+		//me.index=index;
 		size=loop&&length>1?length-2:length;
 		me.opt.onInitEnd.call(me,loop&&length>1?index-1:index,size);
 	},

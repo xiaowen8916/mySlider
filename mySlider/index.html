@@ -30,12 +30,13 @@
 			<span class="index-num"></span>/<span class="index-size"></span>
 		</div>
 		<script>
-			new Slider({
+			var slider=new Slider({
 				dependWidthSelector:'.height-wrapper',
 				selector:'.slider-wrapper',
 				loop:true,
 				autoPlay:true,
 				interval:3000,
+				//speed:3000,
 				height:240,
 				onInitEnd:function(index,size){
 					$('.index-num').html(index+1);
