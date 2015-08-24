@@ -5,16 +5,19 @@
 		<meta content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,minimal-ui" name="viewport"/>
 		<link rel="stylesheet" type="text/css" href="css/common.css"/>
 		<style>
+			.height-wrapper{position:relative;margin:0 20px;border:2px solid black;}
 			.slider-wrapper ul:after{display:table;content:'';clear:both;}
 			.slider-wrapper li{float:left;font-size:0;}
 			.slider-index{margin-top:20px;font-size: 28px;text-align:center;}
+			.prev{color:#fff;position:absolute;top:50%;left:0;width:80px;height:50px;line-height: 50px;text-align: center;margin-top: -25px;background: rgba(0,0,0,.5);}
+			.next{color:#fff;position:absolute;top:50%;right:0;width:80px;height:50px;line-height: 50px;text-align: center;margin-top: -25px;background: rgba(0,0,0,.5);}
 		</style>
 		<script src="js/jquery-1.8.3.js"></script>
 		<!--<script src="js/zepto.js"></script>-->
 		<script src="js/slider.js"></script>
 	</head>
 	<body>
-		<div class="height-wrapper" style="margin:0 20px;border:2px solid black;">
+		<div class="height-wrapper">
 			<div class="slider-wrapper">
 				<ul>
 					<li><img src="imgs/1.jpg"/></li>
@@ -25,6 +28,8 @@
 					<li><img src="imgs/6.jpg"/></li>
 				</ul>
 			</div>
+			<div class="prev">上一张</div>
+			<div class="next">下一张</div>
 		</div>
 		<div class="slider-index">
 			<span class="index-num"></span>/<span class="index-size"></span>
@@ -45,6 +50,10 @@
 				onSlideMove:function(index){
 					$('.index-num').html(index+1);
 				}
+			});
+			$(function(){
+				$('.prev').click(function(){slider.prev();});
+				$('.next').click(function(){slider.next();});
 			});
 		</script>
 	</body>

@@ -191,14 +191,10 @@ Slider.prototype = {
 	},
 	slideTo: function (index) {
 		var me = this;
-		if(!me.loop||me.loop&&me.length===1){
-			if(index<0){
-				index=0;
-			}else if(index>me.length-1){
-				index=me.length-1;
-			}
-		}else{
-			console.log(index);
+		if(index<0){
+			index=0;
+		}else if(index>me.length-1){
+			index=me.length-1;
 		}
 		me.opt.onSlideStart.call(me);
 		me.$con.css(me.cssPrefix+'transition',me.opt.speed + 'ms '+me.opt.effect).css(
@@ -217,21 +213,21 @@ Slider.prototype = {
 			if (!me.loop&&me.index == me.length - 1) {
 				me.slideTo(0);
 			} else {
-				me.next();
+				me.slideTo(me.index+1);
 			}
 		}, me.opt.interval);
 	},
 	next: function () {
-		var me = this;
-		if (me.index < me.length - 1) {
-			me.slideTo(me.index + 1);
-		}
+		var me=this,autoPlay=me.opt.autoPlay;
+		autoPlay&&me.stop();
+		me.slideTo(me.index + 1);
+		autoPlay&&me.reStart();
 	},
 	prev: function () {
-		var me = this;
-		if (me.index > 0) {
-			me.slideTo(me.index - 1);
-		}
+		var me=this,autoPlay=me.opt.autoPlay;
+		autoPlay&&me.stop();
+		me.slideTo(me.index - 1);
+		autoPlay&&me.reStart();
 	},
 	insertImgItems:function(){
 		var imgItem,me=this,imgArry=[],datas=me.datas,imgAttrs='';
@@ -312,7 +308,7 @@ Slider.prototype = {
 			transX=loop&&length>1?width:0;
 		}
 		$con.css(me.cssPrefix+'transform','translate3d(-'+transX+'px,0,0)');
-		//me.index=index;
+		me.index=index;
 		size=loop&&length>1?length-2:length;
 		me.opt.onInitEnd.call(me,loop&&length>1?index-1:index,size);
 	},
