@@ -385,5 +385,11 @@ Slider.prototype = {
 	clearTransitionTime:function(){
 		var me=this;
 		me.$con.css(me.cssPrefix+'transition','0ms '+me.opt.effect);
+	},
+	goTo:function(index){
+		var me=this,isLoop=me.loop&&me.length> 1,length=isLoop?me.length- 2:me.length;
+		if(index>=0&&index<=length-1){
+			me.slideTo(isLoop?index+1:index);
+		}
 	}
 };
