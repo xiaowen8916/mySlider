@@ -8,7 +8,7 @@
 function Slider(opt) {
 	var me = this;
 	me.opt = $.extend({
-		dependWidthSelector:'',
+		//dependWidthSelector:'',
 		selector: '',
 		speed: 200,
 		datas:[],
@@ -26,40 +26,41 @@ function Slider(opt) {
 		onInitEnd:function(index,size){
 		},
 		autoPlay: false,
-		interval: 4000,
+		interval: 3000,
 		effect:'ease',
 		loop:false,
 		defaultSrc:'',
 		lazyLoad:false,
 		lazyLoadSum:5,
-		forceUpdateImgs:false,
-		singleton:false,
+		//forceUpdateImgs:false,
+		//singleton:false,
 		useTransitionEnd:true
 	}, opt);
-	if(me.init())return Slider.prototype.instance;
+	//if(me.init())return Slider.prototype.instance;
+	me.init();
 	me.opt.autoPlay&&me.autoPlay();
 }
 Slider.prototype = {
 	constructor: Slider,
-	instance:null,
+	//instance:null,
 	init: function () {
 		var me = this,
 			datas=me.opt.datas,
 			selector=me.opt.selector,
-			$dependWidthSel=$(me.opt.dependWidthSelector||window),
+			//$dependWidthSel=$(window),
 			$sel=$(selector||'.qt-slider'),
-			imgSize=$sel.find('ul img').length,
-			instance=Slider.prototype.instance;
-		if(me.opt.singleton&&instance){
-			me.initSeenItem(me.opt.index,instance);
-			return true;
-		}
-		me.width=$dependWidthSel.width();
+			imgSize=$sel.find('ul img').length;
+			//instance=Slider.prototype.instance;
+		//if(me.opt.singleton&&instance){
+		//	me.initSeenItem(me.opt.index,instance);
+		//	return true;
+		//}
+		me.width=$(window).width();
 		me.height=me.opt.height;
 		me.loop=me.opt.loop;
-		me.$dependWidthSel=$dependWidthSel;
+		//me.$dependWidthSel=$dependWidthSel;
 		me.$sel=$sel.css({'overflow':'hidden','width':me.width+'px'});
-		if(me.opt.forceUpdateImgs||!imgSize){
+		if(!imgSize){
 			me.datas=[];
 			me.datas=me.loop&&datas.length>1?me.datas.concat(datas[datas.length-1],datas,datas[0]):datas;
 			me.length=me.datas.length;
@@ -75,7 +76,7 @@ Slider.prototype = {
 		me.initCSSPrefix();
 		me.initEvents();
 		me.initSeenItem(me.opt.index);
-		if(me.opt.singleton)Slider.prototype.instance=this;
+		//if(me.opt.singleton)Slider.prototype.instance=this;
 		return false;
 	},
 	initEvents: function () {
@@ -294,12 +295,12 @@ Slider.prototype = {
 			optHeight&&$img.attr('height',optHeight);
 		});
 	},
-	initSeenItem:function(_index,ins){
-		var index,size,transX,me=ins||this,
-			$con=me.$con||me.$sel.find('ul'),
-			length=me.length||me.$sel.find('li').length,
-			loop=me.loop||me.opt.loop,
-			width=me.width||me.$dependWidthSel.width();
+	initSeenItem:function(_index){
+		var index,size,transX,me=this,
+			$con=me.$con,
+			length=me.length,
+			loop=me.loop,
+			width=me.width;
 		if(index=+_index){
 			index=loop&&length>1?index+1:index;
 			transX=width*index;
